@@ -1,0 +1,31 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Terminal color codes for better visibility
+red='\033[0;31m'
+green='\033[0;32m'
+yellow='\033[0;33m'
+blue='\033[0;34m'
+no_color='\033[0m'
+
+# Prevent commits in master/main branch
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "master" ] || [ "$branch" = "main" ]; then
+  echo ""
+  echo -e "${red}( う-´)づ︻╦̵̵̿╤──  \(˚☐˚”)/ [ERROR] You can't commit directly to master/main branch ❗${no_color}"
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo -e "${blue}(╭ರ_•́) Git Precommit Checks  (╭ರ_•́)${no_color}"
+echo ""
+
+exec >/dev/tty 2>&1
+
+# Run checks to ensure the code is clean
+npx --no-install git-precommit-checks
+
+# Run linters on staged files
+npx --no-install lint-staged
